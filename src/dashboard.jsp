@@ -15,6 +15,7 @@
             if (username != null) {
         %>
         <p>Welcome, <%= username %>!</p>
+        <p><a href="viewTrains.jsp">view trains</a></p>
         <p><a href="logout.jsp">logout</a></p>
         <% } else { %>
         	<p>Please log in to access the dashboard.  <a href="login.jsp">login</a></p>
