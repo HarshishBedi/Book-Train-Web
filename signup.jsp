@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Train Navigation System - Login</title>
+    <title>Train Navigation System - Sign Up</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -69,16 +69,9 @@
             border: none;
             border-radius: 6px;
             cursor: pointer;
-            margin-bottom: 10px;
         }
         button:hover {
             background-color: #0056b3;
-        }
-        .error-message {
-            color: red;
-            text-align: center;
-            margin-top: 10px;
-            font-size: 14px;
         }
         .footer {
             text-align: center;
@@ -92,74 +85,70 @@
 
     <!-- Header -->
     <header>
-        Train Navigation System
+        Train Navigation System - Sign Up
     </header>
 
-    <!-- Login Form Container -->
+    <!-- Sign Up Form Container -->
     <div class="container">
-        <h2>Login</h2>
+        <h2>Sign Up</h2>
 
-        <form method="post" action="login.jsp">
+        <form method="post" action="signup.jsp">
+            <label for="first_name">First Name:</label>
+            <input type="text" id="first_name" name="first_name" required>
+
+            <label for="last_name">Last Name:</label>
+            <input type="text" id="last_name" name="last_name" required>
+
             <label for="username">Username:</label>
             <input type="text" id="username" name="username" required>
 
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" required>
 
-            <button type="submit" name="loginType" value="customer">Login as Customer</button>
-            <button type="submit" name="loginType" value="employee">Login as Employee</button>
-            <button type="submit" name="loginType" value="admin">Login as Admin</button>
+            <button type="submit">Sign Up</button>
         </form>
 
-        <!-- Sign Up Button -->
-        <div class="footer">
-            <p>New customer? <a href="signup.jsp">Sign Up here</a></p>
-        </div>
-
         <% 
+            String firstName = request.getParameter("first_name");
+            String lastName = request.getParameter("last_name");
             String username = request.getParameter("username");
             String password = request.getParameter("password");
-            String loginType = request.getParameter("loginType");
 
-            if (username != null && password != null && loginType != null) {
+            if (firstName != null && lastName != null && username != null && password != null) {
                 try {
                     // Database connection
                     Class.forName("com.mysql.cj.jdbc.Driver");
                     java.sql.Connection conn = java.sql.DriverManager.getConnection(
                         "jdbc:mysql://localhost:3306/dbdsproject", "root", "asscrack69");
 
-                    String table = "";
-                    String redirectPage = "";
+                    // Check if username already exists
+                    String checkQuery = "SELECT * FROM customers WHERE Username = ?";
+                    java.sql.PreparedStatement checkStmt = conn.prepareStatement(checkQuery);
+                    checkStmt.setString(1, username);
+                    java.sql.ResultSet checkRs = checkStmt.executeQuery();
 
-                    // Set table and redirection based on login type
-                    if (loginType.equals("customer")) {
-                        table = "customers";
-                        redirectPage = "customerdash.jsp";
-                    } else if (loginType.equals("employee")) {
-                        table = "employee";
-                        redirectPage = "employeedash.jsp";
-                    } else if (loginType.equals("admin")) {
-                        table = "employee";
-                        redirectPage = "admindash.jsp";
-                    }
-
-                    String query = "SELECT * FROM " + table + " WHERE Username = ? AND pass = ?";
-
-                    java.sql.PreparedStatement stmt = conn.prepareStatement(query);
-                    stmt.setString(1, username);
-                    stmt.setString(2, password);
-
-                    java.sql.ResultSet rs = stmt.executeQuery();
-
-                    if (rs.next()) {
-                        session.setAttribute("username", username);
-                        response.sendRedirect(redirectPage);
+                    if (checkRs.next()) {
+                        out.println("<p class='error-message'>Username already taken. Please choose a different one.</p>");
                     } else {
-                        out.println("<p class='error-message'>Invalid username or password.</p>");
+                        // Insert the new customer into the database
+                        String insertQuery = "INSERT INTO customers (First_Name, Last_Name, Username, pass) VALUES (?, ?, ?, ?)";
+                        java.sql.PreparedStatement insertStmt = conn.prepareStatement(insertQuery);
+                        insertStmt.setString(1, firstName);
+                        insertStmt.setString(2, lastName);
+                        insertStmt.setString(3, username);
+                        insertStmt.setString(4, password);
+
+                        int result = insertStmt.executeUpdate();
+                        if (result > 0) {
+                            out.println("<p>Sign up successful! You can now <a href='login.jsp'>login</a>.</p>");
+                        } else {
+                            out.println("<p class='error-message'>Error during sign up. Please try again.</p>");
+                        }
+                        insertStmt.close();
                     }
 
-                    rs.close();
-                    stmt.close();
+                    checkRs.close();
+                    checkStmt.close();
                     conn.close();
                 } catch (Exception e) {
                     e.printStackTrace();

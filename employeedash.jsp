@@ -9,7 +9,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Dashboard</title>
+    <title>Employee Dashboard</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -87,10 +87,10 @@
         Train Navigation System
     </header>
 
-    <!-- Customer Dashboard Container -->
+    <!-- Employee Dashboard Container -->
     <div class="container">
         <h2>Welcome, <%= session.getAttribute("username") %>!</h2>
-        <p>This is your Customer Dashboard.</p>
+        <p>This is your Employee Dashboard.</p>
 
         <!-- Book Train Button -->
         <form method="get" action="booktrains.jsp">
