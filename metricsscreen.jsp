@@ -1,15 +1,21 @@
 <%
-    if (session.getAttribute("username") == null) {
-        response.sendRedirect("login.jsp");
-        return;
-    }
+    // Get form data
+    String customerName = request.getParameter("customer");
+    String transitLine = request.getParameter("transitLine");
+    String month = request.getParameter("month");
+    String year = request.getParameter("year");
+
+    String bestCustomerName = "GET THIS FROM DATABASE";
+    String[] bestTrainLines = ["GET THESE FROM DATABASE"];
+
+    // Example: you can add ticket booking logic here
 %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>Ticket Confirmation</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -20,6 +26,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            box-sizing: border-box;
         }
 
         .container {
@@ -28,12 +35,15 @@
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 500px;
+            max-width: 600px;
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         h2 {
-            font-size: 28px;
+            font-size: 32px;
             color: #333;
             margin-bottom: 20px;
         }
@@ -41,7 +51,8 @@
         p {
             font-size: 18px;
             color: #555;
-            margin-bottom: 30px;
+            margin-bottom: 15px;
+            line-height: 1.6;
         }
 
         button {
@@ -52,7 +63,7 @@
             border: none;
             border-radius: 6px;
             cursor: pointer;
-            width: 100%;
+            margin-top: 20px;
         }
 
         button:hover {
@@ -76,7 +87,9 @@
             width: 100%;
             position: absolute;
             top: 0;
+            left: 0;
         }
+
     </style>
 </head>
 <body>
@@ -86,25 +99,24 @@
         Train Navigation System
     </header>
 
-    <!-- Admin Dashboard Container -->
+    <!-- Ticket Confirmation Container -->
     <div class="container">
-        <h2>Welcome, <%= session.getAttribute("username") %>!</h2>
-        <p>This is your Admin Dashboard.</p>
+        <h2>Metrics</h2>
 
-        <!-- Admin Metrics Button -->
-        <form method="get" action="adminmetrics.jsp">
-            <button type="submit">View Metrics</button>
-        </form>
+        <% if (customerName != null) { %>
+            <p><strong>Customer:</strong> <%= customerName %></p>
+            <!--DISPLAY REVENUE AND RESERVATION DATA-->
+        <% } else if (transitLine != null) { %>
+            <p><strong>Transit Line:</strong> <%= transitLine %></p>
+            <!--DISPLAY REVENUE AND RESERVATION DATA-->
+        <% } else { %>
+            <p><strong>Total Sales in <%= month %>/<%= year %>:</strong> <!--DISPLAY THE SALES HERE--></p>
+        <% } %>
 
-        <!-- Admin Add Representatives Button -->
-        <form method="get" action="adminaddreps.jsp">
-            <button type="submit">Add/Edit/Delete Customer Reps</button>
-        </form>
+        <p><strong>Best Customer:</strong> <%= bestCustomerName %></p>
 
-        <!-- Logout Form -->
-        <form method="post" action="logout.jsp">
-            <button type="submit">Logout</button>
-        </form>
+        <p><strong>Best Train Lines:</strong> <%= bestTrainLines %></p>
+
     </div>
 
 </body>
