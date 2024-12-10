@@ -9,11 +9,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>CoachPulse Navigation System (TM) - Admin Dashboard</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #f0f4f8;
+            background-color: #f8f9fa;
             margin: 0;
             padding: 0;
             display: flex;
@@ -44,9 +44,13 @@
             margin-bottom: 30px;
         }
 
+        form {
+            margin-bottom: 20px; /* Adds spacing between buttons */
+        }
+
         button {
             padding: 12px 24px;
-            background-color: #007bff;
+            background-color: #d32f2f;
             color: white;
             font-size: 16px;
             border: none;
@@ -56,7 +60,7 @@
         }
 
         button:hover {
-            background-color: #0056b3;
+            background-color: #b71c1c;
         }
 
         .footer {
@@ -67,7 +71,7 @@
         }
 
         header {
-            background-color: #007bff;
+            background-color: #d32f2f;
             color: white;
             padding: 20px 0;
             text-align: center;
@@ -83,7 +87,7 @@
 
     <!-- Header -->
     <header>
-        Train Navigation System
+        CoachPulse Navigation System (TM)
     </header>
 
     <!-- Admin Dashboard Container -->

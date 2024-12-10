@@ -9,11 +9,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Metrics</title>
+    <title>CoachPulse Navigation System (TM) - Admin Metrics</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #f0f4f8;
+            background-color: #f8f9fa;
             margin: 0;
             padding: 0;
             display: flex;
@@ -28,23 +28,35 @@
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 500px;
-            text-align: center;
+            max-width: 700px;
         }
 
         h2 {
-            font-size: 28px;
+            font-size: 24px;
             color: #333;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
+            text-align: center;
         }
 
         p {
-            font-size: 18px;
+            font-size: 16px;
             color: #555;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        form {
             margin-bottom: 30px;
         }
 
-        input[type="text"], input[type="date"], select {
+        label {
+            font-size: 14px;
+            color: #333;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"], input[type="number"] {
             width: 100%;
             padding: 12px;
             margin-bottom: 20px;
@@ -52,11 +64,12 @@
             border: 1px solid #ddd;
             font-size: 16px;
             color: #333;
+            box-sizing: border-box;
         }
 
         button {
-            padding: 12px 24px;
-            background-color: #007bff;
+            padding: 12px;
+            background-color: #d32f2f;
             color: white;
             font-size: 16px;
             border: none;
@@ -66,119 +79,93 @@
         }
 
         button:hover {
-            background-color: #0056b3;
+            background-color: #b71c1c;
         }
 
-        .footer {
-            text-align: center;
+        a {
+            color: #d32f2f;
+            text-decoration: none;
             font-size: 14px;
-            color: #777;
-            margin-top: 40px;
         }
 
-        header {
-            background-color: #007bff;
-            color: white;
-            padding: 20px 0;
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .return-link {
             text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-            width: 100%;
-            position: absolute;
-            top: 0;
-        }
-
-        .return-journey {
-            display: none;
             margin-top: 20px;
         }
 
-        /* Align checkbox to the left */
-        .checkbox-container {
-            text-align: left;
-            width: 100%;
-            margin-bottom: 20px;
-        }
-
-        .checkbox-container input[type="checkbox"] {
-            margin-right: 10px;
-            vertical-align: middle;
+        header {
+            background-color: #d32f2f;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
         }
     </style>
-    <script>
-        function validateSalesReportForm() {
-            var month = document.getElementById("month").value;
-            var year = document.getElementById("year").value;
-            
-            // If return date is selected, validate it
-            if (month) {
-                // Convert to Date objects for comparison
-                var travelDateObj = new Date(year, month, 1);
-                var today = new Date();
-                
-                // If return date is earlier than travel date
-                if (today.before(travelDate)) {
-                    alert("Cannot be in the future.");
-                    return false; // Prevent form submission
-                }
-            }
-            
-            return true; // Form is valid
-        }
-    </script>
 </head>
 <body>
 
     <!-- Header -->
     <header>
-        Train Navigation System
+        CoachPulse Navigation System (TM)
     </header>
 
-    <!-- Book Train Form Container -->
+    <!-- Metrics Form Container -->
     <div class="container">
-        <div>
+        <div class="section">
             <h2>Sales Reports</h2>
             <p>Check sales reports for a given month.</p>
 
-            <!-- Train Booking Form -->
-            <form method="post" action="metricsscreen.jsp" onsubmit="return validateSalesReportForm()">
+            <form method="post" action="metricsscreen.jsp">
                 <label for="month">Month:</label>
-                <input type="number" id="month" name="month" placeholder="Enter month" required>
+                <input type="number" id="month" name="month" placeholder="Enter month" min="1" max="12" required>
             
                 <label for="year">Year:</label>
-                <input type="number" id="year" name="year" placeholder="Enter year" required>
+                <input type="number" id="year" name="year" placeholder="Enter year" min="2000" max="2100" required>
             
                 <button type="submit">Get Report</button>
             </form>
         </div>
 
-        <div>
+        <div class="section">
             <h2>Get Reservations and Revenue (Transit Line)</h2>
             <p>Fill in the details below to get all reservations and revenue for a given transit line.</p>
 
-            <!-- Train Booking Form -->
-            <form method="post" action="metricsscreen.jsp" onsubmit="return true">
+            <form method="post" action="metricsscreen.jsp">
                 <label for="transitLine">Transit Line:</label>
                 <input type="text" id="transitLine" name="transitLine" placeholder="Enter transit line" required>
             
-                <button type="submit">Book Train</button>
+                <button type="submit">Get Details</button>
             </form>
         </div>
 
-        <div>
+        <div class="section">
             <h2>Get Reservations and Revenue (Customer Name)</h2>
             <p>Fill in the details below to get all reservations and revenue for a given customer.</p>
 
-            <!-- Train Booking Form -->
-            <form method="post" action="metricsscreen.jsp" onsubmit="return true">
+            <form method="post" action="metricsscreen.jsp">
                 <label for="customer">Customer Name:</label>
                 <input type="text" id="customer" name="customer" placeholder="Enter customer name" required>
             
-                <button type="submit">Book Train</button>
+                <button type="submit">Get Details</button>
             </form>
         </div>
 
-        <p><a href="admindash.jsp">Back to Dashboard</a></p>
+        <div class="return-link">
+            <a href="admindash.jsp">Back to Dashboard</a>
+        </div>
     </div>
 
 </body>

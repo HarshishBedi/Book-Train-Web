@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Train Navigation System - Login</title>
+    <title>CoachPulse Navigation System (TM) - Login</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #f0f4f8;
+            background-color: #f8f9fa;
             margin: 0;
             padding: 0;
             display: flex;
@@ -16,7 +16,7 @@
             height: 100vh;
         }
         header {
-            background-color: #007bff;
+            background-color: #d32f2f;
             color: white;
             padding: 20px 0;
             text-align: center;
@@ -57,13 +57,13 @@
             box-sizing: border-box;
         }
         input[type="text"]:focus, input[type="password"]:focus {
-            border-color: #007bff;
+            border-color: #d32f2f;
             background-color: #ffffff;
         }
         button {
             width: 100%;
             padding: 14px;
-            background-color: #007bff;
+            background-color: #d32f2f;
             color: white;
             font-size: 16px;
             border: none;
@@ -72,7 +72,7 @@
             margin-bottom: 10px;
         }
         button:hover {
-            background-color: #0056b3;
+            background-color: #b71c1c;
         }
         .error-message {
             color: red;
@@ -92,7 +92,7 @@
 
     <!-- Header -->
     <header>
-        Train Navigation System
+        CoachPulse Navigation System (TM)
     </header>
 
     <!-- Login Form Container -->
@@ -139,7 +139,7 @@
                         table = "employee";
                         redirectPage = "employeedash.jsp";
                     } else if (loginType.equals("admin")) {
-                        table = "employee";
+                        table = "employee";  // Assuming you have an 'admin' table in your database
                         redirectPage = "admindash.jsp";
                     }
 
