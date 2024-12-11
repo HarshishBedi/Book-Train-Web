@@ -14,6 +14,17 @@
         preparedStatement = connection.prepareStatement(query);
         resultSet = preparedStatement.executeQuery();
 %>
+
+<%
+    String message = request.getParameter("message");
+    if (message != null) {
+%>
+    <div style="color: green; text-align: center; margin-bottom: 20px;">
+        <strong><%= message %></strong>
+    </div>
+<%
+    }
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -43,48 +54,6 @@
             color: #333333;
         }
 
-        .btn {
-            display: inline-block;
-            padding: 10px 15px;
-            font-size: 14px;
-            font-weight: bold;
-            color: #ffffff;
-            text-decoration: none;
-            text-align: center;
-            border-radius: 5px;
-            transition: all 0.3s ease-in-out;
-            cursor: pointer;
-        }
-
-        .btn-add {
-            background-color: #28a745;
-            margin-bottom: 20px;
-            display: block;
-            width: max-content;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .btn-add:hover {
-            background-color: #218838;
-        }
-
-        .btn-primary {
-            background-color: #007bff;
-        }
-
-        .btn-primary:hover {
-            background-color: #0056b3;
-        }
-
-        .btn-danger {
-            background-color: #dc3545;
-        }
-
-        .btn-danger:hover {
-            background-color: #a71d2a;
-        }
-
         table {
             width: 100%;
             border-collapse: collapse;
@@ -107,6 +76,35 @@
 
         tr:nth-child(even) {
             background-color: #f9f9f9;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 5px 0;
+            font-size: 14px;
+            font-weight: bold;
+            color: #ffffff;
+            text-decoration: none;
+            text-align: center;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background-color: #a71d2a;
         }
 
         form {
@@ -146,9 +144,6 @@
 <body>
     <div class="container">
         <h1>Manage Customer Representatives</h1>
-
-        <!-- Add Representative Button -->
-        <a href="#addForm" class="btn btn-add">Add New Representative</a>
         
         <!-- Display Customer Representatives -->
         <table>
@@ -180,7 +175,7 @@
         </table>
 
         <!-- Add New Customer Representative Form -->
-        <h2 id="addForm">Add New Representative</h2>
+        <h2>Add New Representative</h2>
         <form method="post" action="createrep.jsp">
             <label for="username">Username:</label>
             <input type="text" id="username" name="username" placeholder="Enter username" required>
@@ -200,4 +195,6 @@
         // Close resources
         if (resultSet != null) try { resultSet.close(); } catch (Exception ignore) {}
         if (preparedStatement != null) try { preparedStatement.close(); } catch (Exception ignore) {}
-        if (connection != null) try {
+        if (connection != null) try { connection.close(); } catch (Exception ignore) {}
+    }
+%>
