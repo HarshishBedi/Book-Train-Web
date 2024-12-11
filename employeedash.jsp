@@ -101,6 +101,11 @@
         <form method="get" action="solve_CS.jsp">
             <button type="submit">Customer Support</button>
         </form>
+
+        <!-- train schedule check -->
+        <form method="get" action="schedule.jsp">
+            <button type="submit">Check train schedules from Origin or Destination</button>
+        </form>
     </div>
 
 </body>

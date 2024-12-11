@@ -24,11 +24,12 @@
             margin-bottom: 20px;
         }
         form {
-            margin: 30px;
+            margin: 30px auto;
             background-color: #f9f9f9;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            width: 50%;
         }
         label {
             font-size: 18px;
@@ -37,7 +38,7 @@
             margin-bottom: 8px;
         }
         textarea {
-            width: 40%;
+            width: 100%;
             padding: 10px;
             margin-bottom: 20px;
             border: 1px solid #ccc;
@@ -63,9 +64,10 @@
             background-color: #900;
         }
         table {
-            width: 100%;
+            width: 80%;
             margin-top: 30px;
             border-collapse: collapse;
+            margin: 0 auto;
         }
         table, th, td {
             border: 1px solid #ccc;
@@ -84,6 +86,7 @@
         p {
             color: #C00;
             font-size: 18px;
+            text-align: center;
         }
     </style>
     <script>
