@@ -108,7 +108,7 @@
         </form>
 
         <!-- Contact Customer Support Button -->
-        <form method="get" action="customer_support.jsp">
+        <form method="get" action="customersupport.jsp">
             <button type="submit">Contact Customer Support</button>
         </form>
 

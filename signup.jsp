@@ -144,7 +144,7 @@
                     // Database connection
                     Class.forName("com.mysql.cj.jdbc.Driver");
                     java.sql.Connection conn = java.sql.DriverManager.getConnection(
-                        "jdbc:mysql://localhost:3306/dbdsproject", "root", "asscrack69");
+                        "jdbc:mysql://localhost:3306/dbdsproject", "root", "root");
 
                     // Check if username already exists
                     String checkQuery = "SELECT * FROM customers WHERE Username = ?";

@@ -13,7 +13,7 @@
     try {
         // Database connection
         Class.forName("com.mysql.cj.jdbc.Driver");
-        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbdsproject", "root", "asscrack69");
+        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbdsproject", "root", "root");
 
         // Query to get fare for the selected route
         String query = "SELECT fare FROM schedule WHERE origin = ? AND destination = ?";

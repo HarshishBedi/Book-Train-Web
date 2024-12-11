@@ -14,7 +14,7 @@
     try {
         // Database connection
         Class.forName("com.mysql.cj.jdbc.Driver");
-        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbdsproject", "root", "asscrack69");
+        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbdsproject", "root", "root");
 
         // Query to fetch all bookings
         String query = "SELECT b.booking_id, s.origin, s.destination, b.travel_dt, b.total_fare " +

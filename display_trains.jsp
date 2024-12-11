@@ -13,7 +13,7 @@
     try {
         Class.forName("com.mysql.cj.jdbc.Driver");
         java.sql.Connection conn = java.sql.DriverManager.getConnection(
-            "jdbc:mysql://localhost:3306/dbdsproject", "root", "asscrack69");
+            "jdbc:mysql://localhost:3306/dbdsproject", "root", "root");
 
         // Query to get trains matching the search criteria
         String query = "SELECT * FROM trains WHERE origin = ? AND destination = ? AND date = ?";

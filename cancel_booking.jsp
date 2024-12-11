@@ -12,7 +12,7 @@
         try {
             // Database connection
             Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbdsproject", "root", "asscrack69");
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbdsproject", "root", "root");
 
             // Query to delete the booking
             String deleteQuery = "DELETE FROM booking WHERE booking_id = ?";

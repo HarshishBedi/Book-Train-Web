@@ -169,7 +169,7 @@
                     try {
                         Class.forName("com.mysql.cj.jdbc.Driver");
                         Connection conn = DriverManager.getConnection(
-                            "jdbc:mysql://localhost:3306/dbdsproject", "root", "asscrack69");
+                            "jdbc:mysql://localhost:3306/dbdsproject", "root", "root");
                         String query = "SELECT DISTINCT origin FROM schedule";
                         PreparedStatement stmt = conn.prepareStatement(query);
                         ResultSet rs = stmt.executeQuery();

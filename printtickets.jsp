@@ -22,7 +22,7 @@
 
     try {
         Class.forName("com.mysql.cj.jdbc.Driver");
-        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbdsproject", "root", "asscrack69");
+        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbdsproject", "root", "root");
 
         // Query to get schedule_id, departure_time, and arrival_time for the outgoing journey
         String query = "SELECT schedule_id, Departure_time, Arrival_time FROM schedule WHERE origin = ? AND destination = ?";

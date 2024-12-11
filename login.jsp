@@ -129,7 +129,7 @@
                     // Database connection
                     Class.forName("com.mysql.cj.jdbc.Driver");
                     java.sql.Connection conn = java.sql.DriverManager.getConnection(
-                        "jdbc:mysql://localhost:3306/dbdsproject", "root", "asscrack69");
+                        "jdbc:mysql://localhost:3306/dbdsproject", "root", "root");
 
                     String table = "";
                     String redirectPage = "";
@@ -156,6 +156,7 @@
 
                     // Check if a record with matching credentials exists
                     if (rs.next()) {
+                        if(loginType.equals("customer")){
                         // Fetch disabled status and DOB
                         boolean disabled = rs.getBoolean("disabled");
                         Date dob = rs.getDate("DOB");
@@ -169,7 +170,27 @@
                         session.setAttribute("dob", dob);  // Store DOB
 
                         response.sendRedirect(redirectPage); // Redirect to appropriate page
-                    } else {
+                        }
+
+                        else if(loginType.equals("employee")){
+                        String first_name = rs.getString("first_name");
+                        String last_name = rs.getString("last_name");
+                        String e_type = rs.getString("e_type");
+                        int employee_id = rs.getInt("employee_id");
+
+                        session.setAttribute("username", username);
+                        session.setAttribute("loginType", loginType);  // Store login type if needed
+                        session.setAttribute("first_name", first_name);
+                        session.setAttribute("last_name", last_name);
+                        session.setAttribute("employee_id", employee_id);
+                        response.sendRedirect(redirectPage); // Redirect to appropriate page
+
+                    }
+                    else{
+                        out.println("<p class='error-message'>Invalid login type.</p>");
+                    }
+                }
+                    else{
                         out.println("<p class='error-message'>Invalid username or password.</p>");
                     }
 

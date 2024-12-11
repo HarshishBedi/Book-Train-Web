@@ -7,7 +7,7 @@
             // Database connection
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection conn = DriverManager.getConnection(
-        "jdbc:mysql://localhost:3306/dbdsproject", "root", "asscrack69");
+        "jdbc:mysql://localhost:3306/dbdsproject", "root", "root");
 
             // Query to get distinct destinations based on the selected origin
             String query = "SELECT DISTINCT destination FROM schedule WHERE origin = ?";
