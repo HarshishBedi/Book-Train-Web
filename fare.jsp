@@ -1,20 +1,37 @@
 <%@ page import="java.sql.*" %>
 <%
-    // Get selected origin and destination from the form
+    // Check if the user is logged in
+    if (session.getAttribute("username") == null) {
+        response.sendRedirect("login.jsp");
+        return;
+    }
+
+    // Retrieve origin, destination, and other parameters from the form
     String selectedOrigin = request.getParameter("origin");
     String selectedDestination = request.getParameter("destination");
+    String travelDate = request.getParameter("travelDate");
+    String returnDate = request.getParameter("returnDate");
+
+    // Save dates to session
+    session.setAttribute("travelDate", travelDate);
+    if (returnDate != null && !returnDate.isEmpty()) {
+        session.setAttribute("returnDate", returnDate);
+    }
+
     String fare = "";
-    String reason = "";  // To store the discount reason
+    String discountedFareMessage = "";
     double originalFare = 0.0;
-    boolean isReturnJourney = request.getParameter("returnJourney") != null;  // Check if return journey is checked
-    String customerId = session.getAttribute("customerId").toString();  // Assuming customer ID is stored in session
+
+    boolean isSeniorChild = "on".equals(request.getParameter("seniorChild"));
+    boolean isDisabled = "on".equals(request.getParameter("disabled"));
+    boolean isDiscountApplicable = isSeniorChild || isDisabled;
 
     if (selectedOrigin != null && !selectedOrigin.isEmpty() && selectedDestination != null && !selectedDestination.isEmpty()) {
         try {
             // Database connection
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection conn = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/dbdsproject", "root", "asscrack69");
+            "jdbc:mysql://localhost:3306/dbdsproject", "root", "asscrack69");
 
             // Query to get fare based on origin and destination
             String query = "SELECT fare FROM schedule WHERE origin = ? AND destination = ?";
@@ -26,46 +43,20 @@
             // Check if fare exists for the given origin and destination
             if (rs.next()) {
                 originalFare = rs.getDouble("fare");
-                fare = String.valueOf(originalFare);
+                fare = String.format("%.2f", originalFare);
+                
+                // Apply 20% discount if the user is a senior/child or disabled
+                if (isDiscountApplicable) {
+                    double discountedFare = originalFare * 0.80; // 20% off
+                    fare = String.format("%.2f", discountedFare);
+                    discountedFareMessage = "Discounted Fare (20% off): ";
+                }
             } else {
                 fare = "No fare found for the selected route.";
             }
 
-            // Get customer information to calculate age and apply discount
-            String customerQuery = "SELECT DOB, disabled FROM customer WHERE customer_id = ?";
-            PreparedStatement customerStmt = conn.prepareStatement(customerQuery);
-            customerStmt.setString(1, customerId);
-            ResultSet customerRs = customerStmt.executeQuery();
-            
-            if (customerRs.next()) {
-                Date dob = customerRs.getDate("DOB");
-                boolean disabled = customerRs.getBoolean("disabled");
-
-                // Calculate age based on DOB
-                int age = calculateAge(dob);
-
-                // Apply discounts based on age and disability
-                if (age < 5) {
-                    fare = String.format("%.2f", originalFare * 0.5); // 50% discount for age below 5
-                    reason = "CHILD";
-                } else if (age > 50) {
-                    fare = String.format("%.2f", originalFare * 0.5); // 50% discount for age over 50
-                    reason = "SENIOR";
-                } else if (disabled) {
-                    fare = String.format("%.2f", originalFare * 0.5); // 50% discount for disability
-                    reason = "DISABILITY";
-                }
-
-                // If return journey is checked, double the fare
-                if (isReturnJourney) {
-                    fare = String.format("%.2f", Double.parseDouble(fare) * 2);
-                }
-            }
-
             rs.close();
             stmt.close();
-            customerRs.close();
-            customerStmt.close();
             conn.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -73,25 +64,6 @@
         }
     } else {
         fare = "Please select both origin and destination.";
-    }
-
-    // Function to calculate age from DOB
-    public int calculateAge(Date dob) {
-        Calendar dobCalendar = Calendar.getInstance();
-        dobCalendar.setTime(dob);
-        int birthYear = dobCalendar.get(Calendar.YEAR);
-        int birthMonth = dobCalendar.get(Calendar.MONTH);
-        int birthDay = dobCalendar.get(Calendar.DAY_OF_MONTH);
-
-        Calendar today = Calendar.getInstance();
-        int age = today.get(Calendar.YEAR) - birthYear;
-
-        // If the birthday hasn't occurred yet this year, subtract one year from the age
-        if (today.get(Calendar.MONTH) < birthMonth || (today.get(Calendar.MONTH) == birthMonth && today.get(Calendar.DAY_OF_MONTH) < birthDay)) {
-            age--;
-        }
-
-        return age;
     }
 %>
 
@@ -119,12 +91,12 @@
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 600px;
+            max-width: 500px;
             text-align: center;
         }
 
         h1 {
-            font-size: 28px;
+            font-size: 32px;
             color: #333;
             margin-bottom: 20px;
         }
@@ -132,20 +104,27 @@
         p {
             font-size: 18px;
             color: #555;
-            margin-bottom: 15px;
+            margin-bottom: 30px;
         }
 
-        .fare-result {
+        .fare-info {
             font-size: 22px;
             font-weight: bold;
-            color: #d32f2f;
-            margin-top: 20px;
+            color: #333;
+            margin-top: 10px;
         }
 
-        .discount-reason {
+        .error-message {
+            color: #d32f2f;
             font-size: 18px;
-            color: #2c6e49;
-            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 14px;
+            color: #777;
+            margin-top: 40px;
         }
 
         header {
@@ -159,30 +138,57 @@
             position: absolute;
             top: 0;
         }
+
+        /* Styling for Pay and Confirm button */
+        .pay-button {
+            background-color: #28a745;
+            color: white;
+            padding: 12px 24px;
+            font-size: 18px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .pay-button:hover {
+            background-color: #218838;
+        }
     </style>
 </head>
 <body>
 
     <!-- Header -->
     <header>
-        CoachPulse Navigation System (TM)
+        CoachPulse Fare Information 
     </header>
 
     <!-- Fare Information Container -->
     <div class="container">
-        <h1>Fare Information</h1>
+    <h1>Fare Information (One-Way)</h1>
+        <p>Origin: <%= selectedOrigin %></p>
+        <p>Destination: <%= selectedDestination %></p>
 
-        <p><strong>Origin:</strong> <%= selectedOrigin %></p>
-        <p><strong>Destination:</strong> <%= selectedDestination %></p>
-        <p class="fare-result"><strong>Fare:</strong> <%= fare %></p>
+        <div class="fare-info">
+            <p><%= discountedFareMessage %>Fare: <%= fare %></p>
+        </div>
 
-        <%
-            if (!reason.isEmpty()) {
-        %>
-        <p class="discount-reason"><strong>Discount Reason:</strong> <%= reason %></p>
-        <%
-            }
-        %>
+        <% if ("No fare found for the selected route.".equals(fare) || "Error fetching fare.".equals(fare)) { %>
+            <p class="error-message"><%= fare %></p>
+        <% } %>
+
+        <!-- Pay and Confirm Button (Redirect to printTickets.jsp) -->
+        <form action="printTickets.jsp" method="get">
+            <!-- Pass the fare and origin/destination information -->
+            <input type="hidden" name="origin" value="<%= selectedOrigin %>">
+            <input type="hidden" name="destination" value="<%= selectedDestination %>">
+            <input type="hidden" name="fare" value="<%= fare %>">
+            <input type="hidden" name="discountedFareMessage" value="<%= discountedFareMessage %>">
+            <input type="hidden" name="travelDate" value="<%= travelDate %>">
+            <input type="hidden" name="returnDate" value="<%= returnDate != null ? returnDate : "" %>">
+            <button type="submit" class="pay-button">Pay and Confirm</button>
+        </form>
     </div>
 
 </body>

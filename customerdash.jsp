@@ -102,14 +102,19 @@
             <button type="submit">Search Trains</button>
         </form>
 
-        <!-- Logout Form -->
-        <form method="post" action="logout.jsp">
-            <button type="submit">Logout</button>
+        <!-- View Upcoming Journeys Button -->
+        <form method="get" action="view_cancel.jsp">
+            <button type="submit">View Upcoming Journeys</button>
         </form>
 
         <!-- Contact Customer Support Button -->
         <form method="get" action="customer_support.jsp">
             <button type="submit">Contact Customer Support</button>
+        </form>
+
+        <!-- Logout Form -->
+        <form method="post" action="logout.jsp">
+            <button type="submit">Logout</button>
         </form>
     </div>
 

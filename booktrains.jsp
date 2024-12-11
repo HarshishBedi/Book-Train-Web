@@ -106,21 +106,23 @@
             xhr.send();
         }
 
-        // Function to handle the return journey checkbox and return date visibility
         function updateFare() {
             var returnJourney = document.getElementById("returnJourney").checked;
             var returnDateField = document.getElementById("returnDateField");
             var fareInput = document.getElementById("fare");
+            var returnDateInput = document.getElementById("returnDate");
 
             // Show or hide return date field based on return journey checkbox
             if (returnJourney) {
                 returnDateField.style.display = "block";
+                returnDateInput.required = true; // Make the return date field required
                 var fareValue = parseFloat(fareInput.value);
                 if (!isNaN(fareValue)) {
                     fareInput.value = (fareValue * 2).toFixed(2);
                 }
             } else {
                 returnDateField.style.display = "none";
+                returnDateInput.required = false; // Remove the required attribute when hidden
                 // Reset fare to original value if return journey is unchecked
                 var originalFare = parseFloat(fareInput.dataset.originalFare);
                 if (!isNaN(originalFare)) {
@@ -128,6 +130,24 @@
                 }
             }
         }
+
+        // Ensure return date visibility and required status when page loads
+        window.onload = function() {
+            updateFare();
+        };
+
+        // Disable form submission if required fields are not filled
+        document.querySelector("form").addEventListener("submit", function(event) {
+            var travelDate = document.getElementById("travelDate").value;
+            var returnJourney = document.getElementById("returnJourney").checked;
+            var returnDate = document.getElementById("returnDate").value;
+
+            // Disable form submission if the travel date is not selected or required return date is missing
+            if (!travelDate || (returnJourney && !returnDate)) {
+                event.preventDefault();
+                alert("Please fill out all required fields.");
+            }
+        });
     </script>
 </head>
 <body>
@@ -185,8 +205,19 @@
             <!-- Return Date (shown when Return Journey is checked) -->
             <div id="returnDateField" style="display: none;">
                 <label for="returnDate">Return Date:</label>
-                <input type="date" name="returnDate" id="returnDate" required>
+                <input type="date" name="returnDate" id="returnDate">
             </div>
+
+            <!-- Additional Checkboxes for Senior/Child and Disabled -->
+            <label>
+                <input type="checkbox" name="seniorChild" id="seniorChild">
+                Senior/Child
+            </label>
+
+            <label>
+                <input type="checkbox" name="disabled" id="disabled">
+                Disabled
+            </label>
 
             <input type="submit" value="Submit">
         </form>

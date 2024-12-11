@@ -1,13 +1,100 @@
+<%@ page import="java.sql.*, java.text.SimpleDateFormat" %>
 <%
-    // Get form data
-    String departure = request.getParameter("departure");
+    // Retrieve session data and form parameters
+    String origin = request.getParameter("origin");
     String destination = request.getParameter("destination");
-    String travelDate = request.getParameter("travelDate");
-    String returnJourney = request.getParameter("returnJourney");
-    String returnDate = request.getParameter("returnDate");
+    String fare = request.getParameter("fare");
+    String discountedFareMessage = request.getParameter("discountedFareMessage");
+    String travelDate = (String) session.getAttribute("travelDate");
+    String returnDate = (String) session.getAttribute("returnDate");
+    int customerId = (int) session.getAttribute("customer_id"); // Assuming customer_id is stored in session
 
-    // Example: you can add ticket booking logic here
+    // Variables for departure and arrival times
+    String departureTime = "N/A";
+    String arrivalTime = "N/A";
+    int scheduleId = -1; // Default value to store schedule ID from the database
+    String travelDt = "";  // This will hold the merged travel date and time
+    String returnTravelDt = "";  // This will hold the merged return travel date and time
+    int returnScheduleId = -1;  // Schedule ID for the return journey
+
+    double totalFare = Double.parseDouble(fare);
+    double returnFare = totalFare;  // Default return fare is same as outgoing fare
+
+    try {
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbdsproject", "root", "asscrack69");
+
+        // Query to get schedule_id, departure_time, and arrival_time for the outgoing journey
+        String query = "SELECT schedule_id, Departure_time, Arrival_time FROM schedule WHERE origin = ? AND destination = ?";
+        PreparedStatement stmt = conn.prepareStatement(query);
+        stmt.setString(1, origin);
+        stmt.setString(2, destination);
+
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next()) {
+            scheduleId = rs.getInt("schedule_id");
+            departureTime = rs.getString("Departure_time");
+            arrivalTime = rs.getString("Arrival_time");
+
+            // Combine travel_date and departure_time to create travel_dt
+            if (!"N/A".equals(departureTime) && travelDate != null) {
+                SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss");
+                String formattedDepartureTime = timeFormatter.format(timeFormatter.parse(departureTime));
+                travelDt = travelDate + " " + formattedDepartureTime; // Format as yyyy-MM-dd HH:mm:ss
+            }
+        }
+
+        // Query for the return journey (reverse origin and destination)
+        if (returnDate != null && !returnDate.isEmpty()) {
+            query = "SELECT schedule_id, Departure_time, Arrival_time FROM schedule WHERE origin = ? AND destination = ?";
+            stmt = conn.prepareStatement(query);
+            stmt.setString(1, destination); // Reverse origin
+            stmt.setString(2, origin); // Reverse destination
+
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                returnScheduleId = rs.getInt("schedule_id");
+                String returnDepartureTime = rs.getString("Departure_time");
+
+                // Combine return_date and departure_time to create returnTravelDt
+                if (!"N/A".equals(returnDepartureTime)) {
+                    SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss");
+                    String formattedReturnDepartureTime = timeFormatter.format(timeFormatter.parse(returnDepartureTime));
+                    returnTravelDt = returnDate + " " + formattedReturnDepartureTime;
+                }
+
+                // Double the fare for the return journey
+                returnFare = totalFare;
+            }
+        }
+
+        // Insert the outgoing journey into the booking table
+        String insertQuery = "INSERT INTO booking (customer_id, schedule_id, total_fare, travel_dt, booking_date) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)";
+        PreparedStatement insertStmt = conn.prepareStatement(insertQuery);
+        insertStmt.setInt(1, customerId);
+        insertStmt.setInt(2, scheduleId);
+        insertStmt.setDouble(3, totalFare);
+        insertStmt.setString(4, travelDt);
+        insertStmt.executeUpdate();
+
+        // Insert the return journey into the booking table if applicable
+        if (returnScheduleId != -1) {
+            insertStmt.setInt(2, returnScheduleId); // Use returnScheduleId
+            insertStmt.setDouble(3, returnFare); // Use doubled fare
+            insertStmt.setString(4, returnTravelDt); // Use returnTravelDt
+            insertStmt.executeUpdate();
+        }
+
+        // Close resources
+        rs.close();
+        stmt.close();
+        insertStmt.close();
+        conn.close();
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
 %>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,7 +111,6 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            box-sizing: border-box;
         }
 
         .container {
@@ -33,14 +119,11 @@
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 600px;
+            max-width: 500px;
             text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
         }
 
-        h2 {
+        h1 {
             font-size: 32px;
             color: #333;
             margin-bottom: 20px;
@@ -49,23 +132,13 @@
         p {
             font-size: 18px;
             color: #555;
-            margin-bottom: 15px;
-            line-height: 1.6;
         }
 
-        button {
-            padding: 12px 24px;
-            background-color: #d32f2f;
-            color: white;
-            font-size: 16px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-
-        button:hover {
-            background-color: #b71c1c;
+        .fare-info {
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+            margin-top: 10px;
         }
 
         .footer {
@@ -85,34 +158,57 @@
             width: 100%;
             position: absolute;
             top: 0;
-            left: 0;
         }
 
+        .button-container {
+            margin-top: 30px;
+        }
+
+        .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
 
     <!-- Header -->
     <header>
-        CoachPulse Navigation System (TM)
+        CoachPulse Ticket Confirmation
     </header>
 
-    <!-- Ticket Confirmation Container -->
+    <!-- Ticket Confirmation -->
     <div class="container">
-        <h2>Booking Confirmation</h2>
+        <h1>Ticket Confirmation</h1>
+        <p>Origin: <%= origin %></p>
+        <p>Destination: <%= destination %></p>
+        <p>Fare: <%= fare %></p>
+        <p><%= discountedFareMessage %></p>
+        <p>Travel Date: <%= travelDate %></p>
+        <p>Return Date: <%= returnDate != null ? returnDate : "N/A" %></p>
+        <p>Departure Time: <%= departureTime %></p>
+        <p>Arrival Time: <%= arrivalTime %></p>
 
-        <p><strong>Departure:</strong> <%= departure %></p>
-        <p><strong>Destination:</strong> <%= destination %></p>
-        <p><strong>Travel Date:</strong> <%= travelDate %></p>
+        <div class="button-container">
+            <form action="customerdash.jsp" method="get">
+                <button type="submit" class="btn">Back to Dashboard</button>
+            </form>
+        </div>
 
-        <% if ("on".equals(returnJourney)) { %>
-            <p><strong>Return Journey:</strong> Yes</p>
-            <p><strong>Return Date:</strong> <%= returnDate %></p>
-        <% } else { %>
-            <p><strong>Return Journey:</strong> No</p>
-        <% } %>
-
-        <button onclick="window.print()">Print Ticket</button>
+        <div class="footer">
+            <p>Thank you for booking with CoachPulse!</p>
+        </div>
     </div>
 
 </body>

@@ -1,3 +1,4 @@
+<%@ page import="java.sql.Date" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -141,7 +142,7 @@
                         table = "employee";
                         redirectPage = "employeedash.jsp";
                     } else if (loginType.equals("admin")) {
-                        table = "admin";  // Adjust table name for admin if needed
+                        table = "employee";  // Adjust table name for admin if needed
                         redirectPage = "admindash.jsp";
                     }
 
@@ -155,9 +156,18 @@
 
                     // Check if a record with matching credentials exists
                     if (rs.next()) {
-                        // Create a new session and set attributes
+                        // Fetch disabled status and DOB
+                        boolean disabled = rs.getBoolean("disabled");
+                        Date dob = rs.getDate("DOB");
+                        int customer_id = rs.getInt("customer_id");
+
+                        // Store the information in session
                         session.setAttribute("username", username);
+                        session.setAttribute("customer_id", customer_id);
                         session.setAttribute("loginType", loginType);  // Store login type if needed
+                        session.setAttribute("disabled", disabled);  // Store disabled status
+                        session.setAttribute("dob", dob);  // Store DOB
+
                         response.sendRedirect(redirectPage); // Redirect to appropriate page
                     } else {
                         out.println("<p class='error-message'>Invalid username or password.</p>");
@@ -170,7 +180,7 @@
                     e.printStackTrace();
                     out.println("<p class='error-message'>Error connecting to the database.</p>");
                 }
-        }
+            }
         %>
     </div>
 
