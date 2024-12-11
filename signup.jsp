@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Train Navigation System - Sign Up</title>
+    <title>CoachPulse Navigation System (TM) - Sign Up</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -16,7 +16,7 @@
             height: 100vh;
         }
         header {
-            background-color: #007bff;
+            background-color: #d32f2f;
             color: white;
             padding: 20px 0;
             text-align: center;
@@ -46,7 +46,7 @@
             font-weight: bold;
             color: #333;
         }
-        input[type="text"], input[type="password"] {
+        input[type="text"], input[type="password"], input[type="date"] {
             width: 100%;
             padding: 12px;
             margin-bottom: 18px;
@@ -56,14 +56,14 @@
             background-color: #f9f9f9;
             box-sizing: border-box;
         }
-        input[type="text"]:focus, input[type="password"]:focus {
-            border-color: #007bff;
+        input[type="text"]:focus, input[type="password"]:focus, input[type="date"]:focus {
+            border-color: #d32f2f;
             background-color: #ffffff;
         }
         button {
             width: 100%;
             padding: 14px;
-            background-color: #007bff;
+            background-color: #d32f2f;
             color: white;
             font-size: 16px;
             border: none;
@@ -71,7 +71,7 @@
             cursor: pointer;
         }
         button:hover {
-            background-color: #0056b3;
+            background-color: #d32f2f;
         }
         .footer {
             text-align: center;
@@ -79,13 +79,24 @@
             color: #777;
             margin-top: 40px;
         }
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        .disclaimer {
+            font-size: 12px;
+            color: #777;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
 
     <!-- Header -->
     <header>
-        Train Navigation System - Sign Up
+        CoachPulse Navigation System (TM) - Sign Up
     </header>
 
     <!-- Sign Up Form Container -->
@@ -105,6 +116,16 @@
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" required>
 
+            <label for="dob">Date of Birth:</label>
+            <input type="date" id="dob" name="dob" required>
+
+            <label for="disabled">Are you a person with a disability?</label>
+            <input type="checkbox" id="disabled" name="disabled">
+
+            <div class="disclaimer">
+                <p>By checking this box, you acknowledge that you may be eligible for assistance based on your disability status in accordance with local policies.</p>
+            </div>
+
             <button type="submit">Sign Up</button>
         </form>
 
@@ -113,8 +134,12 @@
             String lastName = request.getParameter("last_name");
             String username = request.getParameter("username");
             String password = request.getParameter("password");
+            String dob = request.getParameter("dob");
+            String disabled = request.getParameter("disabled");
 
-            if (firstName != null && lastName != null && username != null && password != null) {
+            boolean isDisabled = (disabled != null && disabled.equals("on"));
+
+            if (firstName != null && lastName != null && username != null && password != null && dob != null) {
                 try {
                     // Database connection
                     Class.forName("com.mysql.cj.jdbc.Driver");
@@ -131,12 +156,14 @@
                         out.println("<p class='error-message'>Username already taken. Please choose a different one.</p>");
                     } else {
                         // Insert the new customer into the database
-                        String insertQuery = "INSERT INTO customers (First_Name, Last_Name, Username, pass) VALUES (?, ?, ?, ?)";
+                        String insertQuery = "INSERT INTO customers (First_Name, Last_Name, Username, pass, DOB, disabled) VALUES (?, ?, ?, ?, ?, ?)";
                         java.sql.PreparedStatement insertStmt = conn.prepareStatement(insertQuery);
                         insertStmt.setString(1, firstName);
                         insertStmt.setString(2, lastName);
                         insertStmt.setString(3, username);
                         insertStmt.setString(4, password);
+                        insertStmt.setString(5, dob);
+                        insertStmt.setBoolean(6, isDisabled);
 
                         int result = insertStmt.executeUpdate();
                         if (result > 0) {

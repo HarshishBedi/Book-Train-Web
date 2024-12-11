@@ -1,16 +1,10 @@
 <%@ page import="java.sql.*" %>
-<%
-    if (session.getAttribute("username") == null) {
-        response.sendRedirect("login.jsp");
-        return;
-    }
-%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Select Origin and Destination</title>
+    <title>Dropdown Example</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -29,14 +23,14 @@
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 600px;
+            max-width: 500px;
             text-align: center;
         }
 
         h1 {
             font-size: 28px;
             color: #333;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
         label {
@@ -44,23 +38,20 @@
             color: #555;
             display: block;
             margin-bottom: 10px;
+            text-align: left;
         }
 
-        select, input[type="date"], input[type="checkbox"] {
+        select {
             padding: 10px;
-            font-size: 16px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
             width: 100%;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 16px;
             margin-bottom: 20px;
+            box-sizing: border-box;
         }
 
-        input[type="checkbox"] {
-            width: auto;
-            margin-top: 10px;
-        }
-
-        input[type="submit"] {
+        button {
             padding: 12px 24px;
             background-color: #d32f2f;
             color: white;
@@ -71,8 +62,15 @@
             width: 100%;
         }
 
-        input[type="submit"]:hover {
+        button:hover {
             background-color: #b71c1c;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 14px;
+            color: #777;
+            margin-top: 40px;
         }
 
         header {
@@ -88,45 +86,26 @@
         }
     </style>
     <script>
+        // Function to update destination dropdown based on selected origin
         function updateDestination() {
             var origin = document.getElementById("origin").value;
             
+            // If no origin is selected, clear the destination dropdown
             if (origin === "") {
                 document.getElementById("destination").innerHTML = "<option value=''>Select a destination</option>";
                 return;
             }
 
+            // Create an AJAX request to fetch destinations for the selected origin
             var xhr = new XMLHttpRequest();
             xhr.open("GET", "fetchDestinations.jsp?origin=" + origin, true);
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == 4 && xhr.status == 200) {
+                    // Populate the destination dropdown with the response
                     document.getElementById("destination").innerHTML = xhr.responseText;
                 }
             };
             xhr.send();
-        }
-
-        // Function to handle the return journey checkbox and return date visibility
-        function updateFare() {
-            var returnJourney = document.getElementById("returnJourney").checked;
-            var returnDateField = document.getElementById("returnDateField");
-            var fareInput = document.getElementById("fare");
-
-            // Show or hide return date field based on return journey checkbox
-            if (returnJourney) {
-                returnDateField.style.display = "block";
-                var fareValue = parseFloat(fareInput.value);
-                if (!isNaN(fareValue)) {
-                    fareInput.value = (fareValue * 2).toFixed(2);
-                }
-            } else {
-                returnDateField.style.display = "none";
-                // Reset fare to original value if return journey is unchecked
-                var originalFare = parseFloat(fareInput.dataset.originalFare);
-                if (!isNaN(originalFare)) {
-                    fareInput.value = originalFare.toFixed(2);
-                }
-            }
         }
     </script>
 </head>
@@ -137,26 +116,31 @@
         CoachPulse Navigation System (TM)
     </header>
 
-    <!-- Dropdown Container -->
+    <!-- Container -->
     <div class="container">
         <h1>Select Origin and Destination</h1>
 
-        <form action="fare.jsp" method="post">
+        <form action="processSelection.jsp" method="post">
             <label for="origin">Origin:</label>
             <select name="origin" id="origin" onchange="updateDestination()">
                 <option value="">Select an origin</option>
                 <%
                     try {
+                        // Database connection
                         Class.forName("com.mysql.cj.jdbc.Driver");
                         Connection conn = DriverManager.getConnection(
                             "jdbc:mysql://localhost:3306/dbdsproject", "root", "asscrack69");
+
+                        // Query to get distinct origin values
                         String query = "SELECT DISTINCT origin FROM schedule";
                         PreparedStatement stmt = conn.prepareStatement(query);
                         ResultSet rs = stmt.executeQuery();
+
+                        // Populate the origin dropdown
                         while (rs.next()) {
                             String origin = rs.getString("origin");
                 %>
-                    <option value="<%= origin %>"><%= origin %></option>
+                            <option value="<%= origin %>"><%= origin %></option>
                 <%
                         }
                         rs.close();
@@ -169,26 +153,16 @@
                 %>
             </select>
 
+            <br><br>
+
             <label for="destination">Destination:</label>
             <select name="destination" id="destination">
                 <option value="">Select a destination</option>
             </select>
 
-            <label for="travelDate">Travel Date:</label>
-            <input type="date" name="travelDate" id="travelDate" required>
+            <br><br>
 
-            <label>
-                <input type="checkbox" id="returnJourney" onclick="updateFare()">
-                Return Journey
-            </label>
-
-            <!-- Return Date (shown when Return Journey is checked) -->
-            <div id="returnDateField" style="display: none;">
-                <label for="returnDate">Return Date:</label>
-                <input type="date" name="returnDate" id="returnDate" required>
-            </div>
-
-            <input type="submit" value="Submit">
+            <button type="submit">Submit</button>
         </form>
     </div>
 

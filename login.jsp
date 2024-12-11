@@ -116,11 +116,13 @@
             <p>New customer? <a href="signup.jsp">Sign Up here</a></p>
         </div>
 
-        <% 
+        <%
+            // Check if the username and password are provided
             String username = request.getParameter("username");
             String password = request.getParameter("password");
             String loginType = request.getParameter("loginType");
 
+            // Only process if username, password, and loginType are provided
             if (username != null && password != null && loginType != null) {
                 try {
                     // Database connection
@@ -139,7 +141,7 @@
                         table = "employee";
                         redirectPage = "employeedash.jsp";
                     } else if (loginType.equals("admin")) {
-                        table = "employee";  // Assuming you have an 'admin' table in your database
+                        table = "admin";  // Adjust table name for admin if needed
                         redirectPage = "admindash.jsp";
                     }
 
@@ -151,9 +153,12 @@
 
                     java.sql.ResultSet rs = stmt.executeQuery();
 
+                    // Check if a record with matching credentials exists
                     if (rs.next()) {
+                        // Create a new session and set attributes
                         session.setAttribute("username", username);
-                        response.sendRedirect(redirectPage);
+                        session.setAttribute("loginType", loginType);  // Store login type if needed
+                        response.sendRedirect(redirectPage); // Redirect to appropriate page
                     } else {
                         out.println("<p class='error-message'>Invalid username or password.</p>");
                     }
@@ -165,7 +170,7 @@
                     e.printStackTrace();
                     out.println("<p class='error-message'>Error connecting to the database.</p>");
                 }
-            }
+        }
         %>
     </div>
 

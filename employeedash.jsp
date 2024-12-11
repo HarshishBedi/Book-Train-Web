@@ -92,14 +92,14 @@
         <h2>Welcome, <%= session.getAttribute("username") %>!</h2>
         <p>This is your Employee Dashboard.</p>
 
-        <!-- Book Train Button -->
-        <form method="get" action="booktrains.jsp">
-            <button type="submit">Book Trains</button>
-        </form>
-
         <!-- Logout Form -->
         <form method="post" action="logout.jsp">
             <button type="submit">Logout</button>
+        </form>
+
+        <!-- Customer Support Button -->
+        <form method="get" action="solve_CS.jsp">
+            <button type="submit">Customer Support</button>
         </form>
     </div>
 
