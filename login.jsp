@@ -142,7 +142,7 @@
                         table = "employee";
                         redirectPage = "employeedash.jsp";
                     } else if (loginType.equals("admin")) {
-                        table = "employee";  // Adjust table name for admin if needed
+                        table = "admin"; 
                         redirectPage = "admindash.jsp";
                     }
 
@@ -175,7 +175,6 @@
                         else if(loginType.equals("employee")){
                         String first_name = rs.getString("first_name");
                         String last_name = rs.getString("last_name");
-                        String e_type = rs.getString("e_type");
                         int employee_id = rs.getInt("employee_id");
 
                         session.setAttribute("username", username);
@@ -185,7 +184,21 @@
                         session.setAttribute("employee_id", employee_id);
                         response.sendRedirect(redirectPage); // Redirect to appropriate page
 
-                    }
+                        }
+                        else if(loginType.equals("admin")){
+                        String first_name = rs.getString("first_name");
+                        String last_name = rs.getString("last_name");
+                        int admin_id = rs.getInt("admin_id");
+
+                        session.setAttribute("username", username);
+                        session.setAttribute("loginType", loginType);  // Store login type if needed
+                        session.setAttribute("first_name", first_name);
+                        session.setAttribute("last_name", last_name);
+                        session.setAttribute("admin_id", admin_id);
+                        response.sendRedirect(redirectPage); // Redirect to appropriate page
+
+                        }
+
                     else{
                         out.println("<p class='error-message'>Invalid login type.</p>");
                     }
