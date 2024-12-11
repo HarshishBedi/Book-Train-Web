@@ -1,166 +1,203 @@
+<%@ page import="java.sql.Connection, java.sql.PreparedStatement, java.sql.ResultSet, java.sql.DriverManager" %>
 <%
-    if (session.getAttribute("username") == null) {
-        response.sendRedirect("login.jsp");
-        return;
-    }
+    // Database connection setup
+    Connection connection = null;
+    PreparedStatement preparedStatement = null;
+    ResultSet resultSet = null;
+
+    try {
+        Class.forName("com.mysql.cj.jdbc.Driver"); // Load the JDBC driver
+        connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbdsproject", "root", "root"); // Update with your database credentials
+
+        // Fetch all customer representatives
+        String query = "SELECT employee_id, username FROM employee";
+        preparedStatement = connection.prepareStatement(query);
+        resultSet = preparedStatement.executeQuery();
 %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CoachPulse Navigation System - Admin Edit/Add Customer Reps</title>
+    <title>Admin: Add/Edit Reps</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #f8f9fa;
+            background-color: #f5f5f5;
             margin: 0;
             padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
         }
 
         .container {
-            background-color: #ffffff;
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 500px;
+            max-width: 900px;
+            margin: 40px auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
             text-align: center;
-        }
-
-        h2 {
-            font-size: 28px;
-            color: #333;
             margin-bottom: 20px;
+            color: #333333;
         }
 
-        p {
-            font-size: 18px;
-            color: #555;
-            margin-bottom: 30px;
-        }
-
-        input[type="text"], input[type="date"], select {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 20px;
-            border-radius: 6px;
-            border: 1px solid #ddd;
-            font-size: 16px;
-            color: #333;
-        }
-
-        button {
-            padding: 12px 24px;
-            background-color: #d32f2f;
-            color: white;
-            font-size: 16px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            width: 100%;
-        }
-
-        button:hover {
-            background-color: #b71c1c;
-        }
-
-        .footer {
-            text-align: center;
+        .btn {
+            display: inline-block;
+            padding: 10px 15px;
             font-size: 14px;
-            color: #777;
-            margin-top: 40px;
-        }
-
-        header {
-            background-color: #d32f2f;
-            color: white;
-            padding: 20px 0;
-            text-align: center;
-            font-size: 24px;
             font-weight: bold;
-            width: 100%;
-            position: absolute;
-            top: 0;
+            color: #ffffff;
+            text-decoration: none;
+            text-align: center;
+            border-radius: 5px;
+            transition: all 0.3s ease-in-out;
+            cursor: pointer;
         }
 
-        .return-journey {
-            display: none;
-            margin-top: 20px;
-        }
-
-        /* Align checkbox to the left */
-        .checkbox-container {
-            text-align: left;
-            width: 100%;
+        .btn-add {
+            background-color: #28a745;
             margin-bottom: 20px;
+            display: block;
+            width: max-content;
+            margin-left: auto;
+            margin-right: auto;
         }
 
-        .checkbox-container input[type="checkbox"] {
-            margin-right: 10px;
-            vertical-align: middle;
+        .btn-add:hover {
+            background-color: #218838;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background-color: #a71d2a;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        table, th, td {
+            border: 1px solid #dddddd;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 12px;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            color: #333333;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        form {
+            margin-top: 30px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        button[type="submit"] {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #218838;
         }
     </style>
-    <script>
-        function validateSalesReportForm() {
-            var month = document.getElementById("month").value;
-            var year = document.getElementById("year").value;
-            
-            // If return date is selected, validate it
-            if (month) {
-                // Convert to Date objects for comparison
-                var travelDateObj = new Date(year, month, 1);
-                var today = new Date();
-                
-                // If return date is earlier than travel date
-                if (today.before(travelDate)) {
-                    alert("Cannot be in the future.");
-                    return false; // Prevent form submission
-                }
-            }
-            
-            return true; // Form is valid
-        }
-    </script>
 </head>
 <body>
-
-    <!-- Header -->
-    <header>
-        CoachPulse Navigation System (TM)
-    </header>
-
-    <!-- Add/Edit Customer Representative Form Container -->
     <div class="container">
-        <div>
-            <h2>Add New Customer Representative</h2>
-            <p>Create a new Customer Representative.</p>
+        <h1>Manage Customer Representatives</h1>
 
-            <!-- ADD MORE DETAILS AS NEEDED FOR DATABASE!!! createrep.jsp is not implemented -->
-            <form method="post" action="createrep.jsp">
-                <label for="newUsername">Username:</label>
-                <input type="text" id="newUsername" name="newUsername" placeholder="Enter username" required>
+        <!-- Add Representative Button -->
+        <a href="#addForm" class="btn btn-add">Add New Representative</a>
+        
+        <!-- Display Customer Representatives -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Employee ID</th>
+                    <th>Username</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <%
+                    while (resultSet.next()) {
+                        int employeeId = resultSet.getInt("employee_id");
+                        String username = resultSet.getString("username");
+                %>
+                <tr>
+                    <td><%= employeeId %></td>
+                    <td><%= username %></td>
+                    <td>
+                        <a href="editrep.jsp?id=<%= employeeId %>" class="btn btn-primary">Edit</a>
+                        <a href="deleterep.jsp?id=<%= employeeId %>" class="btn btn-danger">Delete</a>
+                    </td>
+                </tr>
+                <%
+                    }
+                %>
+            </tbody>
+        </table>
+
+        <!-- Add New Customer Representative Form -->
+        <h2 id="addForm">Add New Representative</h2>
+        <form method="post" action="createrep.jsp">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" placeholder="Enter username" required>
             
-                <label for="newPassword">Password:</label>
-                <input type="text" id="newPassword" name="newPassword" placeholder="Enter password" required>
+            <label for="password">Password:</label>
+            <input type="text" id="password" name="password" placeholder="Enter password" required>
             
-                <button type="submit">Create Account</button>
-            </form>
-        </div>
-
-        <div>
-            <h2>Edit Customer Representative</h2>
-            <p>Edit or delete a customer representative.</p>
-
-            <!--DISPLAY THE CUSTOMER REPRESENTATIVES HERE, PULLED FROM DATABASE.-->
-        </div>
-
-        <p><a href="admindash.jsp">Back to Dashboard</a></p>
+            <button type="submit">Add Representative</button>
+        </form>
     </div>
-
 </body>
 </html>
+<%
+    } catch (Exception e) {
+        e.printStackTrace();
+    } finally {
+        // Close resources
+        if (resultSet != null) try { resultSet.close(); } catch (Exception ignore) {}
+        if (preparedStatement != null) try { preparedStatement.close(); } catch (Exception ignore) {}
+        if (connection != null) try {
