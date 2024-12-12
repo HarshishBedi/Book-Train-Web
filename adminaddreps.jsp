@@ -182,6 +182,15 @@
             
             <label for="password">Password:</label>
             <input type="text" id="password" name="password" placeholder="Enter password" required>
+
+            <label for="firstName">First Name:</label>
+            <input type="text" id="firstName" name="firstName" placeholder="Enter first name" required>
+
+            <label for="lastName">Last Name:</label>
+            <input type="text" id="lastName" name="lastName" placeholder="Enter last name" required>
+
+            <label for="ssn">SSN:</label>
+            <input type="text" id="ssn" name="ssn" placeholder="Enter SSN" required>
             
             <button type="submit">Add Representative</button>
         </form>
