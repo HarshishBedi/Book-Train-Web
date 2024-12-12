@@ -1,24 +1,15 @@
 <%@ page import="java.sql.*, java.text.SimpleDateFormat" %>
 <%
     // Retrieve session data and form parameters
-    String repUsername = request.getParameter("username");
-    String repPassword = request.getParameter("password");
-    String firstName = request.getParameter("firstName");
-    String lastName = request.getParameter("lastName");
-    String ssn = request.getParameter("ssn");
+    String employeeId = request.getParameter("id");
 
     try {
         Class.forName("com.mysql.cj.jdbc.Driver");
         Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbdsproject", "root", "root");
 
-        // Insert the outgoing journey into the booking table
-        String insertQuery = "INSERT INTO employee (Username, Pass, First_Name, Last_Name, SSN) VALUES (?, ?, ?, ?, ?)";
+        String insertQuery = "DELETE FROM employee WHERE employee_Id = ?";
         PreparedStatement insertStmt = conn.prepareStatement(insertQuery);
-        insertStmt.setString(1, repUsername);
-        insertStmt.setString(2, repPassword);
-        insertStmt.setString(3, firstName);
-        insertStmt.setString(4, lastName);
-        insertStmt.setString(5, ssn);
+        insertStmt.setString(1, employeeId);
         insertStmt.executeUpdate();
 
         // Close resources
@@ -34,7 +25,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Representative Confirmation</title>
+    <title>Representative Delete</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -119,16 +110,12 @@
 
     <!-- Header -->
     <header>
-        CoachPulse Representative Creation
+        CoachPulse Representative Delete
     </header>
 
-    <!-- Confirmation -->
     <div class="container">
-        <h1>Representative Created</h1>
-        <p>Last Name: <%= lastName %></p>
-        <p>First Name: <%= firstName %></p>
-        <p>Username: <%= repUsername %></p>
-        <p>Please make sure the representative did not have a duplicate SSN. If they did, they were not added.</p>
+        <h1>Representative Deleted</h1>
+        <p>Please make sure the representative is not assigned to any customers. If they are, they were <strong>not deleted</strong>.</p>
     </div>
 
 </body>

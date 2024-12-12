@@ -6,19 +6,21 @@
     String firstName = request.getParameter("firstName");
     String lastName = request.getParameter("lastName");
     String ssn = request.getParameter("ssn");
+    String employeeId = request.getParameter("employeeId");
 
     try {
         Class.forName("com.mysql.cj.jdbc.Driver");
         Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbdsproject", "root", "root");
 
         // Insert the outgoing journey into the booking table
-        String insertQuery = "INSERT INTO employee (Username, Pass, First_Name, Last_Name, SSN) VALUES (?, ?, ?, ?, ?)";
+        String insertQuery = "UPDATE employee SET (Username = ?, Pass = ?, First_Name = ?, Last_Name = ?, SSN = ?) WHERE employeeId = ?";
         PreparedStatement insertStmt = conn.prepareStatement(insertQuery);
         insertStmt.setString(1, repUsername);
         insertStmt.setString(2, repPassword);
         insertStmt.setString(3, firstName);
         insertStmt.setString(4, lastName);
         insertStmt.setString(5, ssn);
+        insertStmt.setString(6, employeeId);
         insertStmt.executeUpdate();
 
         // Close resources
@@ -34,7 +36,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Representative Confirmation</title>
+    <title>Representative Edit</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -119,16 +121,16 @@
 
     <!-- Header -->
     <header>
-        CoachPulse Representative Creation
+        CoachPulse Representative Edit
     </header>
 
-    <!-- Confirmation -->
+    <!-- Edit Customer Representative Form -->
     <div class="container">
-        <h1>Representative Created</h1>
+        <h1>Representative Edited</h1>
         <p>Last Name: <%= lastName %></p>
         <p>First Name: <%= firstName %></p>
         <p>Username: <%= repUsername %></p>
-        <p>Please make sure the representative did not have a duplicate SSN. If they did, they were not added.</p>
+        <p>Please make sure the representative did not have a duplicate SSN. If they did, they were not edited.</p>
     </div>
 
 </body>
