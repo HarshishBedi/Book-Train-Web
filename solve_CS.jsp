@@ -149,6 +149,21 @@
             out.println("<p>Error fetching tickets from the database.</p>");
         }
     %>
+
+    <button type="button" onclick="window.location.href='employeedash.jsp'" style="
+    background-color: #d32f2f;
+    color: white;
+    font-size: 18px;
+    padding: 12px 20px;
+    margin-top: 20px;
+    width: 100%;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;">
+    Go To Dashboard
+</button>
+
 </div>
 
 <script>

@@ -376,6 +376,20 @@
         <textarea id="destination" name="destination" rows="2" oninput="toggleFields()"></textarea><br>
         
         <input type="submit" value="Search">
+        <button type="button" onclick="window.location.href='employeedash.jsp'" style="
+    background-color: #C00;
+    color: white;
+    font-size: 18px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s ease;
+    margin-top: 20px; /* Add gap above the button */
+">
+    Go To Dashboard
+</button>
     </form>
 
 </body>
