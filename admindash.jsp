@@ -114,11 +114,14 @@
     </header>
 
     <!-- Sidebar -->
-<!-- Sidebar -->
     <div class="sidebar">
         <a href="#" onclick="loadContent('sales_report.jsp')">Sales Report</a>
         <a href="#" onclick="loadContent('customer_reservations.jsp')">Customer Reservations</a>
-        <a href="#" onclick="loadContent('transit_reservations.jsp')">Transit Line Reservations</a> <!-- New button -->
+        <a href="#" onclick="loadContent('transit_reservations.jsp')">Transit Line Reservations</a>
+        <a href="#" onclick="loadContent('customer_revenue.jsp')">Customer Revenue</a>
+        <a href="#" onclick="loadContent('transit_line_revenue.jsp')">Transit Line Revenue</a>
+        <a href="#" onclick="loadContent('best_customer.jsp')">Best Customer</a>
+        <a href="#" onclick="loadContent('most_active_transit_lines.jsp')">Most Active Transit Lines</a> <!-- New button -->
         <a href="logout.jsp">Logout</a>
     </div>
 
