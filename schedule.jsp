@@ -1,237 +1,53 @@
-<!-- <%@ page import="java.sql.*, java.util.*" %>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Schedule Search</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: white;
-            color: #333;
-            margin: 0;
-            padding: 0;
-        }
-        header {
-            background-color: #C00;
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-        h2 {
-            font-size: 28px;
-            margin-bottom: 20px;
-        }
-        form {
-            margin: 30px auto;
-            background-color: #f9f9f9;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-            width: 50%;
-        }
-        label {
-            font-size: 18px;
-            color: #333;
-            display: block;
-            margin-bottom: 8px;
-        }
-        textarea {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 20px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 16px;
-            color: #333;
-        }
-        textarea:disabled {
-            background-color: #e0e0e0;
-        }
-        input[type="submit"] {
-            background-color: #C00;
-            color: white;
-            font-size: 18px;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%;
-            transition: background-color 0.3s ease;
-        }
-        input[type="submit"]:hover {
-            background-color: #900;
-        }
-        table {
-            width: 80%;
-            margin-top: 30px;
-            border-collapse: collapse;
-            margin: 0 auto;
-        }
-        table, th, td {
-            border: 1px solid #ccc;
-        }
-        th, td {
-            padding: 12px;
-            text-align: left;
-        }
-        th {
-            background-color: #C00;
-            color: white;
-        }
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-        p {
-            color: #C00;
-            font-size: 18px;
-            text-align: center;
-        }
-    </style>
-    <script>
-        function toggleFields() {
-            var origin = document.getElementById('origin').value;
-            var destination = document.getElementById('destination').value;
-            
-            if (origin) {
-                document.getElementById('destination').disabled = true;
-            } else if (destination) {
-                document.getElementById('origin').disabled = true;
-            } else {
-                document.getElementById('origin').disabled = false;
-                document.getElementById('destination').disabled = false;
-            }
-        }
-    </script>
-</head>
-<body>
-    <header>
-        <h2>Schedule Search</h2>
-    </header>
-
-    <% 
-        String origin = request.getParameter("origin");
-        String destination = request.getParameter("destination");
-        
-        if ((origin != null && !origin.trim().isEmpty()) || (destination != null && !destination.trim().isEmpty())) {
-            Connection conn = null;
-            PreparedStatement stmt = null;
-            ResultSet rs = null;
-            try {
-                // Assuming JDBC connection setup
-                String url = "jdbc:mysql://localhost:3306/dbdsproject";
-                String username = "root";
-                String password = "root";
-                
-                conn = DriverManager.getConnection(url, username, password);
-                
-                String query = "SELECT * FROM schedule WHERE ";
-                if (origin != null && !origin.trim().isEmpty()) {
-                    query += "Origin = ? ";
-                } else {
-                    query += "Destination = ? ";
-                }
-                
-                stmt = conn.prepareStatement(query);
-                stmt.setString(1, origin != null && !origin.trim().isEmpty() ? origin : destination);
-                
-                rs = stmt.executeQuery();
-                
-                if (rs.next()) {
-                    out.println("<h3>Schedule Records</h3>");
-                    out.println("<table>");
-                    out.println("<tr><th>Schedule_ID</th><th>Train_ID</th><th>Transit_Line</th><th>Origin</th><th>Destination</th><th>Departure_Time</th><th>Arrival_Time</th><th>Fare</th></tr>");
-                    do {
-                        out.println("<tr>");
-                        out.println("<td>" + rs.getInt("Schedule_ID") + "</td>");
-                        out.println("<td>" + rs.getInt("Train_ID") + "</td>");
-                        out.println("<td>" + rs.getString("Transit_Line") + "</td>");
-                        out.println("<td>" + rs.getString("Origin") + "</td>");
-                        out.println("<td>" + rs.getString("Destination") + "</td>");
-                        out.println("<td>" + rs.getTime("Departure_Time") + "</td>");
-                        out.println("<td>" + rs.getTime("Arrival_Time") + "</td>");
-                        out.println("<td>" + rs.getBigDecimal("Fare") + "</td>");
-                        out.println("</tr>");
-                    } while (rs.next());
-                    out.println("</table>");
-                } else {
-                    out.println("<p>No schedule found for the given search criteria.</p>");
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-                out.println("<p>Error: " + e.getMessage() + "</p>");
-            } finally {
-                try {
-                    if (rs != null) rs.close();
-                    if (stmt != null) stmt.close();
-                    if (conn != null) conn.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    %>
-
-    <form method="POST">
-        <label for="origin">Origin:</label>
-        <textarea id="origin" name="origin" rows="2" oninput="toggleFields()"></textarea><br>
-        
-        <label for="destination">Destination:</label>
-        <textarea id="destination" name="destination" rows="2" oninput="toggleFields()"></textarea><br>
-        
-        <input type="submit" value="Search">
-    </form>
-
-</body>
-</html> -->
-
-
-
 <%@ page import="java.sql.*, java.util.*" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Schedule Search</title>
+    <title>Dynamic Train Search</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: white;
-            color: #333;
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
             margin: 0;
             padding: 0;
         }
+
         header {
-            background-color: #C00;
+            background-color: #d32f2f;
             color: white;
-            padding: 20px;
+            padding: 20px 0;
             text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            width: 100%;
         }
+
+        .container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            margin: 50px auto;
+        }
+
         h2 {
             font-size: 28px;
+            color: #333;
             margin-bottom: 20px;
         }
-        h3 {
-            color: #C00;
-            text-align: center;
-        }
-        form {
-            margin: 30px auto;
-            background-color: #f9f9f9;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-            width: 50%;
-        }
+
         label {
-            font-size: 18px;
-            color: #333;
+            font-size: 16px;
+            color: #555;
             display: block;
             margin-bottom: 8px;
         }
-        textarea {
+
+        select {
             width: 100%;
             padding: 10px;
             margin-bottom: 20px;
@@ -240,157 +56,102 @@
             font-size: 16px;
             color: #333;
         }
-        textarea:disabled {
-            background-color: #e0e0e0;
-        }
-        input[type="submit"] {
-            background-color: #C00;
+
+        button {
+            padding: 12px 24px;
+            background-color: #d32f2f;
             color: white;
-            font-size: 18px;
-            padding: 10px 20px;
+            font-size: 16px;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
             width: 100%;
-            transition: background-color 0.3s ease;
+            margin-top: 15px;
         }
-        input[type="submit"]:hover {
-            background-color: #900;
-        }
-        table {
-            width: 80%;
-            margin-top: 30px;
-            border-collapse: collapse;
-            margin: 0 auto;
-        }
-        table, th, td {
-            border: 1px solid #ccc;
-        }
-        th, td {
-            padding: 12px;
-            text-align: left;
-        }
-        th {
-            background-color: #C00;
-            color: white;
-        }
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-        p {
-            color: #C00;
-            font-size: 18px;
-            text-align: center;
+
+        button:hover {
+            background-color: #b71c1c;
         }
     </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        function toggleFields() {
-            var originField = document.getElementById('origin');
-            var destinationField = document.getElementById('destination');
-            
-            if (originField.value) {
-                destinationField.disabled = true;
-            } else if (destinationField.value) {
-                originField.disabled = true;
+        // AJAX request to fetch dynamic dropdown values
+        function updateDestinations() {
+            var origin = $('#origin').val();
+            if (origin != '') {
+                $.ajax({
+                    url: 'getDestinations.jsp', // File to return destination options
+                    type: 'GET',
+                    data: { origin: origin },
+                    success: function(response) {
+                        $('#destination').html(response); // Update destination dropdown
+                    }
+                });
             } else {
-                originField.disabled = false;
-                destinationField.disabled = false;
+                $('#destination').html('<option value="">Select Destination</option>'); // Reset destination if origin is empty
             }
         }
     </script>
 </head>
 <body>
+
+    <!-- Header -->
     <header>
-        <h2>Schedule Search</h2>
+        CoachPulse Navigation System (TM)
     </header>
 
-    <%
-        String searchOrigin = request.getParameter("origin");
-        String searchDestination = request.getParameter("destination");
-        
-        if ((searchOrigin != null && !searchOrigin.trim().isEmpty()) || 
-            (searchDestination != null && !searchDestination.trim().isEmpty())) {
-            Connection conn = null;
-            PreparedStatement stmt = null;
-            ResultSet rs = null;
-            try {
-                // Assuming JDBC connection setup
-                String url = "jdbc:mysql://localhost:3306/dbdsproject";
-                String username = "root";
-                String password = "root";
-                
-                conn = DriverManager.getConnection(url, username, password);
-                
-                String query = "SELECT * FROM schedule WHERE ";
-                if (searchOrigin != null && !searchOrigin.trim().isEmpty()) {
-                    query += "Origin = ? ";
-                } else {
-                    query += "Destination = ? ";
-                }
-                
-                stmt = conn.prepareStatement(query);
-                stmt.setString(1, searchOrigin != null && !searchOrigin.trim().isEmpty() ? searchOrigin : searchDestination);
-                
-                rs = stmt.executeQuery();
-                
-                if (rs.next()) {
-                    out.println("<h3>Schedule Records</h3>");
-                    out.println("<table>");
-                    out.println("<tr><th>Schedule_ID</th><th>Train_ID</th><th>Transit_Line</th><th>Origin</th><th>Destination</th><th>Departure_Time</th><th>Arrival_Time</th><th>Fare</th></tr>");
-                    do {
-                        out.println("<tr>");
-                        out.println("<td>" + rs.getInt("Schedule_ID") + "</td>");
-                        out.println("<td>" + rs.getInt("Train_ID") + "</td>");
-                        out.println("<td>" + rs.getString("Transit_Line") + "</td>");
-                        out.println("<td>" + rs.getString("Origin") + "</td>");
-                        out.println("<td>" + rs.getString("Destination") + "</td>");
-                        out.println("<td>" + rs.getTime("Departure_Time") + "</td>");
-                        out.println("<td>" + rs.getTime("Arrival_Time") + "</td>");
-                        out.println("<td>" + rs.getBigDecimal("Fare") + "</td>");
-                        out.println("</tr>");
-                    } while (rs.next());
-                    out.println("</table>");
-                } else {
-                    out.println("<p>No schedule found for the given search criteria.</p>");
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-                out.println("<p>Error: " + e.getMessage() + "</p>");
-            } finally {
-                try {
-                    if (rs != null) rs.close();
-                    if (stmt != null) stmt.close();
-                    if (conn != null) conn.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    %>
+    <!-- Dynamic Train Search Form -->
+    <div class="container">
+        <h2>Train Search</h2>
+        <form method="get" action="search_results.jsp">
 
-    <form method="POST">
-        <label for="origin">Origin:</label>
-        <textarea id="origin" name="origin" rows="2" oninput="toggleFields()"></textarea><br>
-        
-        <label for="destination">Destination:</label>
-        <textarea id="destination" name="destination" rows="2" oninput="toggleFields()"></textarea><br>
-        
-        <input type="submit" value="Search">
-        <button type="button" onclick="window.location.href='employeedash.jsp'" style="
-    background-color: #C00;
-    color: white;
-    font-size: 18px;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    width: 100%;
-    transition: background-color 0.3s ease;
-    margin-top: 20px; /* Add gap above the button */
-">
-    Go To Dashboard
-</button>
-    </form>
+            <label for="origin">Origin</label>
+            <select id="origin" name="origin" onchange="updateDestinations()">
+                <option value="">Select Origin</option>
+                <% 
+                    // Fetch origins dynamically from the database
+                    Connection conn = null;
+                    PreparedStatement stmt = null;
+                    ResultSet rs = null;
+                    try {
+                        String url = "jdbc:mysql://localhost:3306/dbdsproject";
+                        String username = "root";
+                        String password = "root";
+                        conn = DriverManager.getConnection(url, username, password);
+
+                        String query = "SELECT DISTINCT Origin FROM schedule";
+                        stmt = conn.prepareStatement(query);
+                        rs = stmt.executeQuery();
+
+                        while (rs.next()) {
+                %>
+                            <option value="<%= rs.getString("Origin") %>">
+                                <%= rs.getString("Origin") %>
+                            </option>
+                <% 
+                        }
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    } finally {
+                        try {
+                            if (rs != null) rs.close();
+                            if (stmt != null) stmt.close();
+                            if (conn != null) conn.close();
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                %>
+            </select>
+
+            <label for="destination">Destination</label>
+            <select id="destination" name="destination">
+                <option value="">Select Destination</option>
+            </select>
+
+            <button type="submit">Search Trains</button>
+        </form>
+    </div>
 
 </body>
 </html>
