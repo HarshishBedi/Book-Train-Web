@@ -115,15 +115,15 @@
 
     <!-- Sidebar -->
     <div class="sidebar">
-        <a href="#" onclick="loadContent('adminmetrics.jsp')">View Metrics</a>
-        <a href="#" onclick="loadContent('adminaddreps.jsp')">Manage Customer Reps</a>
+        <a href="#" onclick="loadContent('sales_report.jsp')">Sales Report</a>
+        <a href="#" onclick="loadContent('customer_reservations.jsp')">Customer Reservations</a>
         <a href="logout.jsp">Logout</a>
     </div>
 
     <!-- Main Content -->
     <div class="main-content">
         <!-- Iframe to dynamically load content -->
-        <iframe id="content-frame" src="adminmetrics.jsp"></iframe>
+        <iframe id="content-frame" src="sales_report.jsp"></iframe>
     </div>
 </body>
 </html>
