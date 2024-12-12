@@ -12,17 +12,32 @@
             background-color: #f8f9fa;
             margin: 0;
             padding: 20px;
+            display: flex;
+            justify-content: center;  /* Centers horizontally */
+            align-items: center;      /* Centers vertically */
+            height: 100vh; 
         }
 
+        header {
+            background-color: #d32f2f;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            width: 100%;
+            position: absolute;
+            top: 0;
+        }
         .container {
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    width: 100%;              /* Makes the container responsive */
+    margin: 0 auto;
+}
         h1 {
             color: #d32f2f;
             text-align: center;
@@ -83,6 +98,10 @@
     </script>
 </head>
 <body>
+    <!-- Header -->
+    <header>
+        CoachPulse Navigation System (TM)
+    </header>
     <div class="container">
         <h1>Schedule Results</h1>
         <table id="scheduleTable" data-sort-order="asc">
