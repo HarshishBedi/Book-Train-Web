@@ -106,6 +106,12 @@
         <form method="get" action="schedule.jsp">
             <button type="submit">Check train schedules from Origin or Destination</button>
         </form>
+
+        <!-- train schedule check -->
+        <form method="get" action="bookingdetails.jsp">
+            <button type="submit">Check train schedules by date and transit line</button>
+        </form>
+
     </div>
 
 </body>
