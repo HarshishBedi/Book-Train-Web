@@ -179,7 +179,7 @@
         <% } %>
 
         <!-- Pay and Confirm Button (Redirect to printTickets.jsp) -->
-        <form action="printTickets.jsp" method="get">
+        <form action="printtickets.jsp" method="get">
             <!-- Pass the fare and origin/destination information -->
             <input type="hidden" name="origin" value="<%= selectedOrigin %>">
             <input type="hidden" name="destination" value="<%= selectedDestination %>">
