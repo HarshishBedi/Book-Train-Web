@@ -46,27 +46,56 @@
         th {
             background-color: #d32f2f;
             color: white;
+            cursor: pointer;
         }
 
         tr:nth-child(even) {
             background-color: #f2f2f2;
         }
     </style>
+
+    <script>
+        // Function to sort the table
+        function sortTable(columnIndex) {
+            var table = document.getElementById("scheduleTable");
+            var rows = Array.from(table.rows).slice(1); // Get all rows except the header
+            var ascending = table.getAttribute("data-sort-order") === "asc";  // Toggle sort direction
+
+            rows.sort(function(a, b) {
+                var cellA = a.cells[columnIndex].innerText.trim();
+                var cellB = b.cells[columnIndex].innerText.trim();
+
+                // Convert values to numbers if they are numeric
+                var valueA = isNaN(cellA) ? cellA : parseFloat(cellA);
+                var valueB = isNaN(cellB) ? cellB : parseFloat(cellB);
+
+                return ascending ? (valueA > valueB ? 1 : -1) : (valueA < valueB ? 1 : -1);
+            });
+
+            // Re-append rows in sorted order
+            rows.forEach(function(row) {
+                table.tBodies[0].appendChild(row);
+            });
+
+            // Toggle the sort order for the next click
+            table.setAttribute("data-sort-order", ascending ? "desc" : "asc");
+        }
+    </script>
 </head>
 <body>
     <div class="container">
         <h1>Schedule Results</h1>
-        <table>
+        <table id="scheduleTable" data-sort-order="asc">
             <thead>
                 <tr>
-                    <th>Schedule ID</th>
-                    <th>Train ID</th>
-                    <th>Transit Line</th>
-                    <th>Origin</th>
-                    <th>Destination</th>
-                    <th>Departure Time</th>
-                    <th>Arrival Time</th>
-                    <th>Fare</th>
+                    <th onclick="sortTable(0)">Schedule ID</th>
+                    <th onclick="sortTable(1)">Train ID</th>
+                    <th onclick="sortTable(2)">Transit Line</th>
+                    <th onclick="sortTable(3)">Origin</th>
+                    <th onclick="sortTable(4)">Destination</th>
+                    <th onclick="sortTable(5)">Departure Time</th>
+                    <th onclick="sortTable(6)">Arrival Time</th>
+                    <th onclick="sortTable(7)">Fare</th>
                 </tr>
             </thead>
             <tbody>
