@@ -114,9 +114,11 @@
     </header>
 
     <!-- Sidebar -->
+<!-- Sidebar -->
     <div class="sidebar">
         <a href="#" onclick="loadContent('sales_report.jsp')">Sales Report</a>
         <a href="#" onclick="loadContent('customer_reservations.jsp')">Customer Reservations</a>
+        <a href="#" onclick="loadContent('transit_reservations.jsp')">Transit Line Reservations</a> <!-- New button -->
         <a href="logout.jsp">Logout</a>
     </div>
 
