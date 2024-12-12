@@ -103,7 +103,7 @@
         </form>
 
         <!-- train schedule check -->
-        <form method="get" action="schedule.jsp">
+        <form method="get" action="schedule_form.jsp">
             <button type="submit">Check train schedules from Origin or Destination</button>
         </form>
 
