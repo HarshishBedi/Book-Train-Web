@@ -11,7 +11,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee Dashboard</title>
+    <title>Modify or Delete Train Schedule</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -30,7 +30,7 @@
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 500px;
+            max-width: 600px;
             text-align: center;
         }
 
@@ -40,10 +40,19 @@
             margin-bottom: 20px;
         }
 
-        p {
-            font-size: 18px;
+        label {
+            font-size: 16px;
             color: #555;
-            margin-bottom: 30px;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
         }
 
         button {
@@ -55,7 +64,6 @@
             border-radius: 6px;
             cursor: pointer;
             width: 100%;
-            margin-bottom: 15px; /* Adds space between buttons */
         }
 
         button:hover {
@@ -89,36 +97,20 @@
         CoachPulse Navigation System (TM)
     </header>
 
-    <!-- Employee Dashboard Container -->
+    <!-- Modify or Delete Schedule Form -->
     <div class="container">
-        <h2>Welcome, <%= session.getAttribute("username") %>!</h2>
-        <p>This is your Employee Dashboard.</p>
+        <h2>Modify or Delete Train Schedule</h2>
 
-        <!-- Logout Form -->
-        <form method="post" action="logout.jsp">
-            <button type="submit">Logout</button>
+        <!-- Search Train Schedule by Schedule ID -->
+        <form method="get" action="modify_schedule.jsp">
+            <label for="scheduleId">Enter Schedule ID to modify or delete</label>
+            <input type="text" id="scheduleId" name="scheduleId" required>
+            <button type="submit">Search Schedule</button>
         </form>
 
-        <!-- Customer Support Button -->
-        <form method="get" action="solve_CS.jsp">
-            <button type="submit">Customer Support</button>
+        <form method="get" action="dashboard.jsp">
+            <button type="submit">Back to Dashboard</button>
         </form>
-
-        <!-- train schedule check -->
-        <form method="get" action="schedule.jsp">
-            <button type="submit">Check train schedules from Origin or Destination</button>
-        </form>
-
-        <!-- Check Train Schedules by Date -->
-        <form method="get" action="bookingdetails.jsp">
-            <button type="submit">Check train schedules by date and transit line</button>
-        </form>
-
-        <!-- Modify or Delete Train Schedule -->
-        <form method="get" action="modify_delete_schedule.jsp">
-            <button type="submit">Modify or Delete Train Schedule</button>
-        </form>
-
     </div>
 
 </body>
