@@ -1,123 +1,158 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.sql.*" %>
+<%@ page import="java.util.*" %>
 <%
+    // Database connection parameters
+    String dbURL = "jdbc:mysql://localhost:3306/dbdsproject";
+    String dbUser = "root";
+    String dbPassword = "root";
+    
     // Get form data
-    String customerName = request.getParameter("customer");
-    String transitLine = request.getParameter("transitLine");
-    String month = request.getParameter("month");
     String year = request.getParameter("year");
 
-    String bestCustomerName = "GET THIS FROM DATABASE";
-    String[] bestTrainLines = {"GET THESE FROM DATABASE"};
+    Connection conn = null;
+    PreparedStatement pstmt = null;
+    ResultSet rs = null;
 
-    // Example: you can add ticket booking logic here
+    // Data for graph
+    Map<String, Double> monthlySales = new LinkedHashMap<>();
+    String[] monthNames = {"January", "February", "March", "April", "May", "June", 
+                           "July", "August", "September", "October", "November", "December"};
+
+    try {
+        Class.forName("com.mysql.jdbc.Driver");
+        conn = DriverManager.getConnection(dbURL, dbUser, dbPassword);
+
+        // Initialize monthly sales with zero values
+        for (String month : monthNames) {
+            monthlySales.put(month, 0.0);
+        }
+
+        // Query for monthly sales data
+        pstmt = conn.prepareStatement(
+            "SELECT MONTH(travel_dt) as month, SUM(total_fare) as total_revenue " +
+            "FROM booking " +
+            "WHERE YEAR(travel_dt) = ? " +
+            "GROUP BY MONTH(travel_dt)"
+        );
+        pstmt.setString(1, year);
+        rs = pstmt.executeQuery();
+
+        while (rs.next()) {
+            int monthIndex = rs.getInt("month") - 1; // Convert to zero-based index
+            double revenue = rs.getDouble("total_revenue");
+            monthlySales.put(monthNames[monthIndex], revenue);
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    } finally {
+        try { if (rs != null) rs.close(); } catch (Exception e) { }
+        try { if (pstmt != null) pstmt.close(); } catch (Exception e) { }
+        try { if (conn != null) conn.close(); } catch (Exception e) { }
+    }
 %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ticket Confirmation</title>
+    <title>Monthly Sales Report</title>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        google.charts.load('current', {'packages':['corechart', 'bar']});
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+            var data = google.visualization.arrayToDataTable([
+                ['Month', 'Sales'],
+                <% for (Map.Entry<String, Double> entry : monthlySales.entrySet()) { %>
+                    ['<%= entry.getKey() %>', <%= entry.getValue() %>],
+                <% } %>
+            ]);
+
+            var options = {
+                title: 'Monthly Sales Report',
+                hAxis: {
+                    title: 'Month'
+                },
+                vAxis: {
+                    title: 'Sales'
+                },
+                legend: { position: 'none' },
+                chartArea: { width: '70%', height: '70%' }
+            };
+
+            var chart = new google.visualization.ColumnChart(document.getElementById('sales_chart'));
+            chart.draw(data, options);
+        }
+    </script>
     <style>
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f8f9fa;
             margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            box-sizing: border-box;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 32px;
+            text-align: center;
+            color: #333;
         }
 
         .container {
-            background-color: #ffffff;
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 600px;
             text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        h2 {
-            font-size: 32px;
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        p {
-            font-size: 18px;
-            color: #555;
-            margin-bottom: 15px;
-            line-height: 1.6;
-        }
-
-        button {
-            padding: 12px 24px;
-            background-color: #d32f2f;
-            color: white;
-            font-size: 16px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-
-        button:hover {
-            background-color: #b71c1c;
-        }
-
-        .footer {
-            text-align: center;
-            font-size: 14px;
-            color: #777;
             margin-top: 40px;
         }
 
-        header {
-            background-color: #d32f2f;
-            color: white;
-            padding: 20px 0;
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
+        #sales_chart {
             width: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
+            height: 500px;
+            margin: 0 auto;
         }
 
+        table {
+            width: 80%;
+            margin: 30px auto;
+            border-collapse: collapse;
+            font-size: 16px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
     </style>
 </head>
 <body>
 
-    <!-- Header -->
-    <header>
-        CoachPulse Navigation System (TM)
-    </header>
+    <h1>Monthly Sales Report</h1>
 
-    <!-- Ticket Confirmation Container -->
-    <div class="container">
-        <h2>Metrics</h2>
+    <!-- Sales chart -->
+    <div class="container" id="sales_chart"></div>
 
-        <% if (customerName != null) { %>
-            <p><strong>Customer:</strong> <%= customerName %></p>
-            <!--DISPLAY REVENUE AND RESERVATION DATA-->
-        <% } else if (transitLine != null) { %>
-            <p><strong>Transit Line:</strong> <%= transitLine %></p>
-            <!--DISPLAY REVENUE AND RESERVATION DATA-->
-        <% } else { %>
-            <p><strong>Total Sales in <%= month %>/<%= year %>:</strong> <!--DISPLAY THE SALES HERE--></p>
+    <!-- Monthly sales table -->
+    <table>
+        <tr>
+            <th>Month</th>
+            <th>Total Sales ($)</th>
+        </tr>
+        <% for (Map.Entry<String, Double> entry : monthlySales.entrySet()) { %>
+            <tr>
+                <td><%= entry.getKey() %></td>
+                <td><%= String.format("%.2f", entry.getValue()) %></td>
+            </tr>
         <% } %>
-
-        <p><strong>Best Customer:</strong> <%= bestCustomerName %></p>
-
-        <p><strong>Best Train Lines:</strong> <%= bestTrainLines %></p>
-
-    </div>
+    </table>
 
 </body>
 </html>
